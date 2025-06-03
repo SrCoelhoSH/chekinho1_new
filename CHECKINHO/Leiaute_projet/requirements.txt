@@ -1,0 +1,9 @@
+pdfminer.six
+PyPDF2
+pdf2image
+PyMuPDF
+pdfplumber
+flask
+
+
+# Python 3.12

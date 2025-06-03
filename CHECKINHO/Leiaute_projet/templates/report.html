@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkinho - Relatório de Verificação</title>
+    <link rel="shortcut icon" href="/static/images/logo_checkinho_provisoria.png" type="image/x-icon">
+    <link rel="icon" href="/static/favicon.ico">
+    <style>
+        body {
+            overflow-x: hidden; /* impede barra horizontal */
+            margin: 0;
+            padding: 0;
+            background-color: #1f1f1f;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100vw;
+        }
+
+        header, footer {
+            text-align: center;
+            padding: 0.9375rem;
+            background-color: #121212;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #ffeb3b;
+            font-size: 1.8rem;
+        }
+
+        header p {
+            margin: 0.3125rem 0 0;
+            color: #bbb;
+            font-size: 1rem;
+        }
+
+        .chat-window {
+            flex: 1;
+            padding: 0.625rem;
+            overflow-y: auto;
+        }
+
+        /* Botão de voltar */
+        #refresh_Btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffeb3b;
+            color: #000;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            margin-left: 0.9375rem;
+            margin-top: 0.625rem;
+            cursor: pointer;
+            border-radius: 0.3125rem;
+            width: 10rem; /* Largura fixa definida */
+            transition: background-color 0.3s ease;
+        }
+
+        #refresh_Btn:hover {
+            background-color: #ffd600;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        /* Container dos processos */
+        .process-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .report {
+            width: 80%;
+            max-width: 62.5rem; /* 62.5rem = 1000px se 1rem=16px */
+            box-sizing: border-box;
+            margin: 0 auto 1.25rem auto;
+            border-left: 0.3125rem solid;
+            padding-left: 0.625rem;
+            background-color: #121212;
+            padding: 2rem;
+        }
+
+        .report.status-ok {
+            border-color: #00c853;
+        }
+
+        .report.status-nc {
+            border-color: #ff1744;
+        }
+
+        .report.status-unknown {
+            border-color: #ffa000;
+        }
+
+        .report h2 {
+            margin-top: 0.625rem;
+            color: #ffeb3b;
+            font-size: 1.4rem;
+        }
+
+        .document-sections-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.625rem;
+            justify-content: space-between;
+        }
+
+        .document-section {
+            flex: 1 1 calc(50% - 0.625rem);
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background-color: #1f1f1f;
+            border-radius: 0.3125rem;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 50rem) {
+            .document-section {
+                flex: 1 1 100%;
+            }
+        }
+
+        .document-section h3 {
+            margin-top: 0;
+            color: #ffeb3b;
+            font-size: 1.1rem;
+            margin-bottom: 0.3125rem;
+        }
+
+        .document-section ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .document-section li {
+            margin: 0.125rem 0;
+            color: #ccc;
+            font-size: 0.8125rem;
+        }
+
+        .document-section li strong {
+            color: #fff;
+        }
+
+        .check-row {
+            display: flex;
+            border-bottom: 0.0625rem solid #333;
+            padding: 0.375rem 0;
+        }
+
+        .field {
+            flex: 2;
+            font-weight: bold;
+            color: #fff;
+            font-size: 0.8125rem;
+        }
+
+        .value {
+            flex: 1;
+            color: #fff;
+            font-size: 0.8125rem;
+        }
+
+        .value.ok {
+            color: #00c853;
+        }
+
+        .value.non-conformity {
+            color: #ff1744;
+        }
+
+        .overall-status {
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .status-ok {
+            color: #00c853;
+        }
+
+        .status-nc {
+            color: #ff1744;
+        }
+
+        .status-unknown {
+            color: #ffa000;
+        }
+
+        .summary {
+            width: 50%;               /* Ajuste conforme desejar (em %) */
+            max-width: 40rem;         /* Opcional: limite em px/rem, ex: 40rem ~ 640px */
+            margin: 1rem auto;
+            padding: 0.9375rem;
+            background-color: #121212;
+            color: #fff;
+            border-radius: 0.25rem;
+        }
+
+        .summary h2 {
+            color: #ffeb3b;
+            margin-bottom: 0.625rem;
+            font-size: 1.5rem;
+        }
+
+        .summary p {
+            color: #ccc;
+            margin: 0.625rem 0;
+            font-size: 0.875rem;
+        }
+
+        .summary ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0.625rem 0;
+        }
+
+        .summary li {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.625rem;
+            margin-bottom: 0.3125rem;
+            border-radius: 0.25rem;
+            color: #fff;
+            font-size: 0.875rem;
+        }
+
+        .summary li.ok {
+            background-color: #388e3c;
+        }
+
+        .summary li.nc {
+            background-color: #d32f2f;
+        }
+
+        .summary li .icon {
+            margin-right: 0.625rem;
+            font-size: 1rem;
+        }
+
+        .summary li.ok .icon::before {
+            content: "\2714";
+        }
+
+        .summary li.nc .icon::before {
+            content: "\2716";
+        }
+
+        /* Botão "Voltar ao Topo" */
+        #back_to_top {
+            display: none; /* Oculto por padrão */
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: #ffeb3b;
+            color: #000;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            z-index: 1000;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #back_to_top:hover {
+            background-color: #ffd600;
+        }
+
+        /* Botão "Descer para o Final" */
+        #scroll_to_bottom {
+            display: none; /* Oculto por padrão */
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem; /* Posicionado no canto inferior esquerdo */
+            background-color: #ffeb3b;
+            color: #000;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            z-index: 1000;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #scroll_to_bottom:hover {
+            background-color: #ffd600;
+        }
+
+        /* Exibir os botões quando ativos */
+        #back_to_top.show, #scroll_to_bottom.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <header>
+            <h1>Checkinho</h1>
+            <p>Relatório de Verificação</p>
+        </header>
+        <button id="refresh_Btn" onclick="window.location.href='/'">Voltar ao Upload</button>
+        <div class="chat-window">
+            <!-- Aqui inserimos o conteúdo do relatório -->
+            {{ report_content|safe }}
+        </div>
+        <footer>
+            <p>&copy; 2025 Leiaute. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Botão "Voltar ao Topo" -->
+    <button id="back_to_top" title="Voltar ao Topo">↑</button>
+
+    <!-- Botão "Descer para o Final" -->
+    <button id="scroll_to_bottom" title="Descer para o Final">↓</button>
+
+    <script>
+        // Seleciona os botões
+        const backToTopBtn = document.getElementById('back_to_top');
+        const scrollToBottomBtn = document.getElementById('scroll_to_bottom');
+
+        // Função para mostrar ou ocultar os botões
+        function handleScroll() {
+            // Quanto o usuário rolou a página
+            const scrollY = window.scrollY || window.pageYOffset;
+            const windowHeight = window.innerHeight;
+            const docHeight = document.documentElement.scrollHeight;
+
+            if (scrollY > 300) { // Exibe os botões após rolar 300px
+                backToTopBtn.classList.add('show');
+                scrollToBottomBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+                scrollToBottomBtn.classList.remove('show');
+            }
+        }
+
+        // Função para rolar suavemente até o topo
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Função para rolar suavemente até o final
+        function scrollToBottom() {
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // Evento de rolagem
+        window.addEventListener('scroll', handleScroll);
+
+        // Eventos de clique nos botões
+        backToTopBtn.addEventListener('click', scrollToTop);
+        scrollToBottomBtn.addEventListener('click', scrollToBottom);
+    </script>
+</body>
+</html>

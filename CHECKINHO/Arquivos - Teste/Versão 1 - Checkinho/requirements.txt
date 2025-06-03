@@ -1,0 +1,10 @@
+selenium
+ChromeDriver
+pytesseract
+PyPDF2
+pdf2image
+
+PyMuPDF
+
+textract
+pdfplumber
