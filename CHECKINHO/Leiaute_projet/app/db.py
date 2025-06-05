@@ -1,8 +1,15 @@
+
 import os
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
 DB_PATH = os.environ.get('DB_PATH', 'app.db')
+
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
+
+DB_PATH = 'app.db'
+
 
 conn = sqlite3.connect(DB_PATH)
 c = conn.cursor()
