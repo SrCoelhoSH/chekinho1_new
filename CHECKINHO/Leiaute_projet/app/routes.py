@@ -210,8 +210,7 @@ def upload_files():
         conn.close()
 
         # Move a pasta de relatórios
-        # destination_path = r"D:\Users\ingride.lima\Documents\CHECKINHO\Leiaute_projet"
-        destination_path = r"G:\Shared drives\AUTOMACAO\CHECKIN_MIDIA"
+        destination_path = os.environ.get('OUTPUT_PATH', r"G:\\Shared drives\\AUTOMACAO\\CHECKIN_MIDIA")
         move_relatorios_folder(destination_path)
 
         return render_template('report.html', report_content=full_html_report)

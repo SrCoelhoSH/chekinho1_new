@@ -18,7 +18,7 @@ def create_app():
 
     app = Flask(__name__, template_folder=templates_dir)
     app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # Limite de 100MB (exemplo)
-    app.config['SECRET_KEY'] = 'change-me'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-me')
     app.register_blueprint(main_bp)
     app.register_blueprint(bp_auth)
     login_manager.init_app(app)
