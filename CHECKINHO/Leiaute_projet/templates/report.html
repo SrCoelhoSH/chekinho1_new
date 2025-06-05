@@ -314,6 +314,7 @@
             <p>Relatório de Verificação</p>
         </header>
         <button id="refresh_Btn" onclick="window.location.href='/'">Voltar ao Upload</button>
+        <a href="{{ url_for('main.history') }}">Histórico</a> | <a href="{{ url_for('auth.logout') }}">Sair</a>
         <div class="chat-window">
             <!-- Aqui inserimos o conteúdo do relatório -->
             {{ report_content|safe }}
