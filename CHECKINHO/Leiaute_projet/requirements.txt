@@ -4,6 +4,7 @@ pdf2image
 PyMuPDF
 pdfplumber
 flask
+flask-login
 
 
 # Python 3.12

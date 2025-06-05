@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados Salvos</title>
+</head>
+<body>
+    <h2>Histórico de Resultados</h2>
+    <ul>
+    {% for r in results %}
+        <li><a href="{{ url_for('main.view_result', result_id=r['id']) }}">{{ r['subfolder_name'] }} - {{ r['created_at'] }}</a></li>
+    {% else %}
+        <li>Nenhum resultado.</li>
+    {% endfor %}
+    </ul>
+    <a href="/">Voltar</a>
+</body>
+</html>
+

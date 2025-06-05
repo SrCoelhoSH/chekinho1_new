@@ -5,7 +5,9 @@ import logging
 import shutil
 import threading
 from flask import Blueprint, render_template, request
+from flask_login import login_required, current_user
 from html import escape
+from db import get_db_connection
 from services import (
     delete_temp_folder,
     verify_documents,
@@ -16,6 +18,7 @@ from services import (
 bp = Blueprint('main', __name__)
 
 @bp.route('/', methods=['GET', 'POST'])
+@login_required
 def upload_files():
     if request.method == 'POST':
         if 'files' not in request.files:
@@ -36,6 +39,7 @@ def upload_files():
         # Inicia a thread para apagar a pasta temp_pdf após 45 segundos
         threading.Thread(target=delete_temp_folder).start()
 
+        selected_fields = request.form.getlist('fields')
         files = request.files.getlist('files')
         for file in files:
             file_path = os.path.join(temp_pdf_dir, file.filename)
@@ -110,7 +114,8 @@ def upload_files():
                     result, status, error_message = verify_documents(
                         file_paths,
                         subfolder_name,
-                        temp_pdf_dir
+                        temp_pdf_dir,
+                        selected_fields
                     )
                     if error_message:
                         logging.warning(f"Erro em '{subfolder_name}': {error_message}")
@@ -151,7 +156,8 @@ def upload_files():
                 result, status, error_message = verify_documents(
                     file_paths,
                     subfolder_name,
-                    temp_pdf_dir
+                    temp_pdf_dir,
+                    selected_fields
                 )
                 if error_message:
                     full_html_report += f"<h2>Erro no conjunto {escape(subfolder_name)}</h2><p>{escape(error_message)}</p>"
@@ -195,6 +201,14 @@ def upload_files():
         summary_report += "</div>"
         full_html_report += summary_report
 
+        conn = get_db_connection()
+        conn.execute(
+            'INSERT INTO results (user_id, subfolder_name, report) VALUES (?, ?, ?)',
+            (current_user.id, root_folder_name, full_html_report)
+        )
+        conn.commit()
+        conn.close()
+
         # Move a pasta de relatórios
         # destination_path = r"D:\Users\ingride.lima\Documents\CHECKINHO\Leiaute_projet"
         destination_path = r"G:\Shared drives\AUTOMACAO\CHECKIN_MIDIA"
@@ -204,3 +218,30 @@ def upload_files():
 
     # Se GET, apenas exibe a página de upload
     return render_template('upload.html')
+
+
+@bp.route('/history')
+@login_required
+def history():
+    conn = get_db_connection()
+    results = conn.execute(
+        'SELECT id, subfolder_name, created_at FROM results WHERE user_id = ? ORDER BY id DESC',
+        (current_user.id,)
+    ).fetchall()
+    conn.close()
+    return render_template('history.html', results=results)
+
+
+@bp.route('/result/<int:result_id>')
+@login_required
+def view_result(result_id):
+    conn = get_db_connection()
+    result = conn.execute(
+        'SELECT report FROM results WHERE id = ? AND user_id = ?',
+        (result_id, current_user.id)
+    ).fetchone()
+    conn.close()
+    if result:
+        return render_template('report.html', report_content=result['report'])
+    return 'Resultado não encontrado', 404
+
