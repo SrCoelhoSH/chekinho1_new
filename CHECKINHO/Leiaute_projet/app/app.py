@@ -2,7 +2,9 @@
 
 import socket
 from flask import Flask
+from flask_login import login_required
 from routes import bp as main_bp
+from auth import bp_auth, login_manager
 import os
 
 def create_app():
@@ -16,7 +18,10 @@ def create_app():
 
     app = Flask(__name__, template_folder=templates_dir)
     app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # Limite de 100MB (exemplo)
-    app.register_blueprint(main_bp)  # Registra o blueprint definido em routes.py
+    app.config['SECRET_KEY'] = 'change-me'
+    app.register_blueprint(main_bp)
+    app.register_blueprint(bp_auth)
+    login_manager.init_app(app)
     return app
 
 if __name__ == '__main__':

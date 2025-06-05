@@ -568,13 +568,17 @@ def check_peca_in_at(at_text, peca):
     return True
 
 
-def determine_overall_status(field_statuses, required_pieces, found_pieces):
+def determine_overall_status(field_statuses, required_pieces, found_pieces, fields_to_verify=None):
     """
     Determina o status geral do processo (OK ou NC) com base nos campos checados e nas peças encontradas.
     """
+    relevant = field_statuses
+    if fields_to_verify:
+        relevant = {k: v for k, v in field_statuses.items() if k in fields_to_verify}
+
     all_fields_ok = all(
         str(status).strip().upper() == 'OK'
-        for status in field_statuses.values()
+        for status in relevant.values()
         if status is not None
     )
 
@@ -593,7 +597,7 @@ def determine_overall_status(field_statuses, required_pieces, found_pieces):
     return overall_status, status_class
 
 
-def generate_html_report(report, subfolder_name, overall_status, status_class):
+def generate_html_report(report, subfolder_name, overall_status, status_class, fields_to_verify=None):
     """
     Gera o relatório HTML final com base em um relatório de texto,
     nome da subpasta, status geral do processo e classe CSS de status.
@@ -706,6 +710,8 @@ def generate_html_report(report, subfolder_name, overall_status, status_class):
         if 'CHECK' in line:
             idx = line.find('CHECK')
             field = escape(line[:idx].strip())
+            if fields_to_verify and field not in fields_to_verify:
+                continue
             value = escape(line[idx:].strip())
 
             # Determina classe CSS baseada no resultado
@@ -1049,7 +1055,7 @@ def save_text_to_file(text, file_name, folder_path):
     logging.info(f"Texto salvo em {file_path}")
 
 
-def verify_documents(file_paths, subfolder_name, temp_pdf_dir, move_os_at_files=True):
+def verify_documents(file_paths, subfolder_name, temp_pdf_dir, fields_to_verify=None, move_os_at_files=True):
     """
     Função principal que faz a verificação dos documentos:
     - Extrai texto e campos de OS, AP, AT e SICAF.
@@ -1148,7 +1154,7 @@ def verify_documents(file_paths, subfolder_name, temp_pdf_dir, move_os_at_files=
     }
 
     overall_status, status_class = determine_overall_status(
-        field_statuses, required_pieces, found_pieces
+        field_statuses, required_pieces, found_pieces, fields_to_verify
     )
 
     # Pasta "Relatorios" onde "OK" e "Non-conformity" serão criadas
@@ -1176,7 +1182,7 @@ def verify_documents(file_paths, subfolder_name, temp_pdf_dir, move_os_at_files=
     except Exception as e:
         logging.error(f"Erro ao mover os arquivos: {e}")
 
-    html_report = generate_html_report(report, subfolder_name, overall_status, status_class)
+    html_report = generate_html_report(report, subfolder_name, overall_status, status_class, fields_to_verify)
     return html_report, overall_status, None
 
 

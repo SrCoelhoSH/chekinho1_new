@@ -166,6 +166,7 @@
         <header>
             <h1>Checkinho</h1>
             <p>Bem-vindo ao verificador de documentos da Leiaute</p>
+            <p><a href="{{ url_for('main.history') }}">Histórico</a> | <a href="{{ url_for('auth.logout') }}">Sair</a></p>
         </header>
         <div class="chat-window">
             <div class="message bot">
@@ -178,6 +179,19 @@
                         <span class="material-symbols-outlined">upload_file</span>
                         <span class="file-label-text">Anexar diretório</span>
                     </label>
+                    <div style="margin-top:1rem;">
+                        <label><input type="checkbox" name="fields" value="OS N°" checked> OS N°</label>
+                        <label><input type="checkbox" name="fields" value="DATAS" checked> Datas</label>
+                        <label><input type="checkbox" name="fields" value="TITULO DA OS/CAMPANHA" checked> Título</label>
+                        <label><input type="checkbox" name="fields" value="ORGAO/PRODUTO" checked> Órgão</label>
+                        <label><input type="checkbox" name="fields" value="TIPO DA CAMPANHA/AUT.CLIENTE" checked> Tipo de Campanha</label>
+                        <label><input type="checkbox" name="fields" value="AT /AT DE PRODUCAO" checked> AT de Produção</label>
+                        <label><input type="checkbox" name="fields" value="AT FORMATO/FORMATO" checked> Formato</label>
+                        <label><input type="checkbox" name="fields" value="DATA EMISSAO/Data da AT" checked> Data AT</label>
+                        <label><input type="checkbox" name="fields" value="Razão social" checked> Razão Social</label>
+                        <label><input type="checkbox" name="fields" value="CNPJ" checked> CNPJ</label>
+                        <label><input type="checkbox" name="fields" value="Município" checked> Município</label>
+                    </div>
                     <button type="submit" id="submitBtn" disabled>Enviar</button>
                 </form>
                 <!-- Exibição dos nomes dos arquivos selecionados -->
